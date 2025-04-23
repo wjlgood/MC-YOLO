@@ -1,0 +1,50 @@
+# Parameters (必须位于文件顶部)
+# 请完整替换为以下配置
+# Parameters
+nc: 3
+scales:
+  s: [0.33, 0.50, 1024]
+
+
+backbone:
+  # [from, repeats, module, args]
+  - [-1, 1, PatchEmbed_FasterNet, [40, 4, 4]]  # 0-P1/4
+  - [-1, 1, BasicStage, [40, 1]]  # 1
+  - [-1, 1, PatchMerging_FasterNet, [80, 2, 2]]  # 2-P2/8
+  - [-1, 2, BasicStage, [80, 1]]  # 3-P3/16
+  - [ -1, 1, CBAM, [ ] ]
+  - [-1, 1, PatchMerging_FasterNet, [160, 2, 2]]  # 4
+  - [-1, 8, BasicStage, [160, 1]]  # 5-P4/32   有更改，原8
+  - [ -1, 1, CBAM, [ ] ]
+  - [-1, 1, PatchMerging_FasterNet, [320, 2, 2]] # 6
+  - [-1, 2, BasicStage, [320, 1]] # 7
+  - [ -1, 1, CBAM, [ ] ]
+  - [-1, 1, SPPF, [320, 5]]  # 8
+
+# Neck (严格索引控制)
+head:
+  - [4, 1, Conv, [256, 1, 1]]    # 9 (P3/8:24->256)  3   12
+  - [7, 1, Conv, [256, 1, 1]]    # 10 (P4/16:48->256)  5  13
+  - [11, 1, Conv, [256, 1, 1]]   # 11 (P5/32:96->256)   8   14
+
+  - [ -1, 1, nn.Upsample, [ None, 2, 'nearest' ] ] # 12 P5->P4
+  - [ [ -1, 13 ], 1, Bi_FPN, [ ] ] # 13 yuan10
+  - [ -1, 1, C2f, [ 256 ] ] # 14-P4/16
+
+  - [ -1, 1, nn.Upsample, [ None, 2, 'nearest' ] ] # 15 P4->P3
+  - [ [ -1, 12 ], 1, Bi_FPN, [ ] ] # 16 yuan9
+  - [ -1, 1, C2f, [ 256 ] ] # 17-P3/8
+
+  - [ 1, 1, Conv, [ 256, 3, 2 ] ] # 18 P2->P3
+  - [ [ -1, 12, 20 ], 1, Bi_FPN, [ ] ] # 19yuan9,17
+  - [ -1, 1, C2f, [ 512 ] ] # 20-P3/8
+
+  - [ -1, 1, Conv, [ 256, 3, 2 ] ] # 21 P3->P4
+  - [ [ -1, 13,17 ], 1, Bi_FPN, [ ] ] # 22 yuan10,14
+  - [ -1, 1, C2f, [ 512 ] ] # 23-P4/16
+
+  - [ -1, 1, Conv, [ 256, 3, 2 ] ] # 24 P4->P5
+  - [ [ -1, 14 ], 1, Bi_FPN, [ ] ] # 25 yuan11
+  - [ -1, 1, C2f, [ 1024 ] ] # 26-P5/32
+
+  - [ [ 20, 26, 29 ], 1, Detect, [ nc ] ]  # Detect(P3, P4, P5)yuan17 23 26
