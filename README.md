@@ -18,8 +18,8 @@ This project is based on the [Ultralytics YOLOv8 official repository](https://gi
 
 ## 📁 Repository structure
 - runs/: contains trained model weights and experiment results
--`ultralytics/` — YOLOv8 core code (models, training, inference, utils)
--`datesetfenli.py` — 数据处理脚本
+- `ultralytics/` — YOLOv8 core code (models, training, inference, utils)
+- `datesetfenli.py` — 数据处理脚本
 - `formattransformation.py` — 格式转换脚本
 - `test.py` — 训练脚本
 - `yolo-insulator.yaml` — 数据和模型配置文件
