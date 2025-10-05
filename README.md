@@ -17,4 +17,4 @@ Key improvements:
 This project is based on the [Ultralytics YOLOv8 official repository](https://github.com/ultralytics/ultralytics).
 
 ## 📁 Repository structure
-
+- runs/: contains trained model weights and experiment results
