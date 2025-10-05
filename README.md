@@ -13,5 +13,8 @@ Key improvements:
 - Preserved feature fusion capability to maintain detection performance for both large and small targets.
 - Dataset: 3000+ UAV-captured insulator images with complex backgrounds.
 
+## 📜 Acknowledgements 
+This project is based on the [Ultralytics YOLOv8 official repository](https://github.com/ultralytics/ultralytics).
+
 ## 📁 Repository structure
 
